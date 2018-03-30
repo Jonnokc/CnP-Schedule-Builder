@@ -23,7 +23,6 @@ var col_range = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Schedule -
       winner_cell.setDataValidation(null);
       score_cell.setDataValidation(null);
     }
-    
   }
 
 }
