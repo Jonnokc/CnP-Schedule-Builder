@@ -20,7 +20,6 @@ var col_range = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Schedule -
         score_cell.setDataValidation(score_rule);
 
     } else  {
-
       winner_cell.setDataValidation(null);
       score_cell.setDataValidation(null);
     }
