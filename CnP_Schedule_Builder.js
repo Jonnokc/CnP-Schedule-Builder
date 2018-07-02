@@ -1,8 +1,8 @@
-function Schedule_Win_Loss_Recorder_Builder() {
+function Schedule_Win_Loss_Recorder_Builder_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
     "Schedule - Win / Loss Recording"
   );
-  
+
   ss.activate();
   var col_range = SpreadsheetApp.getActiveSpreadsheet()
     .getSheetByName("Schedule - Win / Loss Recording")
@@ -36,7 +36,7 @@ function Schedule_Win_Loss_Recorder_Builder() {
   }
 }
 
-function Schedule_Win_Loss_Recording() {
+function Schedule_Win_Loss_Recording_() {
   // gets the laste row from the schedule builder sheet
   primary_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
     "Schedule - Win / Loss Recording"
@@ -130,7 +130,7 @@ function sheet_size_() {
   }
 }
 
-function Schedule_Desktop_Formulas() {
+function Schedule_Desktop_Formulas_() {
   primary_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
     "Schedule - Raw Numbers"
   );
@@ -404,6 +404,121 @@ function deleterow_(row_index, num_rows) {
   var sheet = SpreadsheetApp.getActiveSheet();
   var rows = num_rows * -1;
   sheet.deleteRows(row_index, rows);
+}
+
+function team_rename() {
+  var ui = SpreadsheetApp.getUi();
+
+  var response = ui.alert("Do you want to rename a team?", ui.ButtonSet.YES_NO);
+
+  // Process the user's response.
+  if (response == ui.Button.YES) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+      "Team Name & Numbers"
+    );
+    ss.activate();
+
+    var to_replace = ui
+      .prompt("What is the name of the team you want to change?")
+      .getResponseText();
+
+    if (to_replace != "") {
+      var name_check = validate_team_name_(to_replace);
+    } else {
+      SpreadsheetApp.getUi().alert("No team name given. Exiting.");
+    }
+  } else {
+    ui.alert("Okiedokie. Won't update any team names!");
+    return;
+  }
+
+  if (name_check === true) {
+    var new_name = ui
+      .prompt("Okay that name checks out. What is the new team name?")
+      .getResponseText();
+
+    var confirm_change = ui.alert(
+      "Confirm you want to replace " + to_replace + " with " + new_name,
+      ui.ButtonSet.YES_NO
+    );
+
+    if (response == ui.Button.YES) {
+      // function which performs the team name find and replace
+      replace_team_name_(to_replace, new_name);
+    } else {
+      ui.alert("Okiedokie. Won't update any team names!");
+      return;
+    }
+  } else if (name_check === false) {
+    ui.alert(
+      "That team name does not match any existing team. I need the team name EXACTLY as it currently is. Try again."
+    );
+  }
+}
+
+// function to validate that the team name given is infact an existing team name.
+function validate_team_name_(team_name) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+    "Team Name & Numbers"
+  );
+
+  ss.activate();
+  var col_range = SpreadsheetApp.getActiveSpreadsheet()
+    .getSheetByName("Team Name & Numbers")
+    .getLastRow();
+
+  // checks if the team name to replace is within the list of existing teams.
+  for (i = 2; i < col_range; i++) {
+    var existing_name = ss.getRange(i, 1).getValue();
+
+    // return True if team name is within existing list
+    if (team_name == existing_name) {
+      return true;
+    }
+  }
+  // return false if team not found
+  return false;
+}
+
+// performs the actual find and replace
+function replace_team_name_(team_name, new_name) {
+  var all_sheets = [
+    "Team Name & Numbers",
+    "Schedule - Builder",
+    "Schedule - Win / Loss Recording"
+  ];
+
+  var arrayLength = all_sheets.length;
+
+  for (var i = 0; i < arrayLength; i++) {
+    primary_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
+      all_sheets[i]
+    );
+    primary_sheet.activate();
+    // stores last row
+    var row_count = SpreadsheetApp.getActiveSpreadsheet().getLastRow();
+    var r = SpreadsheetApp.getActiveSheet().getDataRange();
+    var cls = r.getNumColumns();
+    var i, j, a, find, repl;
+    find = team_name;
+    repl = new_name;
+    for (i = 1; i <= row_count; i++) {
+      for (j = 1; j <= cls; j++) {
+        a = r.getCell(i, j).getValue();
+        if (r.getCell(i, j).getFormula()) {
+          continue;
+        }
+        try {
+          a = a.replace(find, repl);
+          r.getCell(i, j).setValue(a);
+        } catch (err) {
+          continue;
+        }
+      }
+    }
+  }
+
+  SpreadsheetApp.getUi().alert("Done! Team Name changed.");
 }
 
 function league_setup() {
