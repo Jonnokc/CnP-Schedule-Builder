@@ -490,9 +490,9 @@ function replace_team_name_(team_name, new_name) {
 
   var arrayLength = all_sheets.length;
 
-  for (var i = 0; i < arrayLength; i++) {
+  for (var k = 0; k < arrayLength; k++) {
     primary_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-      all_sheets[i]
+      all_sheets[k]
     );
     primary_sheet.activate();
     // stores last row
