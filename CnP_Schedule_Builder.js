@@ -85,7 +85,7 @@ function Schedule_Win_Loss_Recording_() {
     col_A_new_range.setFormulasR1C1(col_A_formula);
     col_B_new_range.setFormulasR1C1(col_B_formula);
     col_C_new_range.setFormulasR1C1(col_C_formula);
-    col_E_new_range.setFormulasR1C1(col_E_formulas);
+    col_E_new_range.setFormulasR1C1(col_E_formula);
   }
 }
 
@@ -287,7 +287,7 @@ function unmerge_() {
       all_sheets[i]
     );
     primary_sheet.activate();
-    var Range = Sheet.getDataRange().activate();
+    var Range = primary_sheet.getDataRange().activate();
     Range.breakApart();
   }
 }
@@ -526,7 +526,7 @@ function league_setup() {
   unmerge_();
   Schedule_Builder_();
   Schedule_Win_Loss_Recorder_Builder_();
-  Schedule_Win_Loss_Formulas_();
+  Schedule_Win_Loss_Recording_();
   Schedule_Desktop_Formulas_();
   Schedule_Mobile_Formulas_();
   Win_Loss_Finalizer_();
